@@ -8,8 +8,6 @@ import User from "../model/userModel.mjs";
 //@ access Private
 const getGoals = asyncHandler(async (req, res) => {
   const goals = await Goal.find({ user: req.user.id });
-  console.log(req.user.id);
-  //   console.log(goals);
   res.status(200).json(goals);
 });
 
@@ -34,13 +32,12 @@ const setGoals = asyncHandler(async (req, res) => {
 //@ access Private
 const updateGoals = asyncHandler(async (req, res) => {
   const goal = await Goal.findById(req.params.id);
-  console.log(goal);
   if (!goal) {
     res.status(400);
     throw new error("Goal not find");
   }
   //check user
-  const user = await User.findOne({ id: req.user.id });
+  const user = await User.findById(req.user.id);
   if (!user) {
     res.status(401);
     throw new Error("User not found");
@@ -61,10 +58,24 @@ const updateGoals = asyncHandler(async (req, res) => {
 //@ access Private
 const deleteGoals = asyncHandler(async (req, res) => {
   const goal = await Goal.findById(req.params.id);
+  console.log(req.params.id);
   if (!goal) {
     res.status(400);
     throw new Error("Goal not find");
   }
+
+  //check user
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+  //make sure logged in user match the goals
+  if (goal.user.toString() !== user.id) {
+    res.status(401);
+    throw new Error("User not authorized");
+  }
+
   const deleteGoal = await Goal.findByIdAndRemove(req.params.id);
   res.status(200).json(deleteGoal);
 });

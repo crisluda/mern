@@ -5,7 +5,8 @@
   "main": "server.mjs",
   "scripts": {
     "start": "node backend/server.mjs",
-    "server": "nodemon backend/server.mjs"
+    "server": "nodemon backend/server.mjs",
+    "client": "npm start --prefix frontend"
   },
   "keywords": [],
   "author": "",
